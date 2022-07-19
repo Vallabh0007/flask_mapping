@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Sample Ol-Cesium</title>
+    <!-- Openlayers -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/css/ol.css"
+    />
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/build/ol.js"></script>
+    <link
+      href="https://cesium.com/downloads/cesiumjs/releases/1.70/Build/Cesium/Widgets/widgets.css"
+      rel="stylesheet"
+    />
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.70/Build/Cesium/Cesium.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/ol-cesium@2.10.0/css/olcs.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/ol-cesium@2.10.0/dist/olcesium.js"></script>
+    <style>
+      html,
+      body,
+      #olCesMap {
+        height: 97.55%;
+        width: 99.3%;
+        padding: 0;
+        margin: 0;
+      }
+
+      #btnSwitchMap {
+        position: absolute;
+        height: 35px;
+        width: 35px;
+        top: 10.2%;
+        left: 93%;
+        opacity: 50%;
+        color: white;
+        background-color: #647eed;
+        border: 3px solid;
+        border-color: #ffffff;
+        z-index: 2;
+      }
+      .up {
+        position: absolute;
+        height: 35px;
+        width: 35px;
+        top: 5%;
+        left: 93%;
+        opacity: 50%;
+        background-color: #647eed;
+        border-bottom: 1px solid;
+        border-right: 3px solid;
+        border-left: 3px solid;
+        border-top: 3px solid;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        border-color: #ffffff;
+        z-index: 2;
+      }
+      .right {
+        position: absolute;
+        height: 35px;
+        width: 35px;
+        top: 10.2%;
+        left: 90.4%;
+        opacity: 50%;
+        background-color: #647eed;
+        border-bottom: 3px solid;
+        border-right: 1px solid;
+        border-left: 3px solid;
+        border-top: 3px solid;
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+        border-color: #ffffff;
+        z-index: 2;
+      }
+      .down {
+        position: absolute;
+        height: 35px;
+        width: 35px;
+        top: 15.5%;
+        left: 93%;
+        opacity: 50%;
+        background-color: #647eed;
+        border-bottom: 3px solid;
+        border-right: 3px solid;
+        border-left: 3px solid;
+        border-top: 1px solid;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        border-color: #ffffff;
+        z-index: 2;
+      }
+      .left {
+        position: absolute;
+        height: 35px;
+        width: 35px;
+        top: 10.2%;
+        left: 95.5%;
+        opacity: 50%;
+        background-color: #647eed;
+        border-bottom: 3px solid;
+        border-right: 3px solid;
+        border-left: 1px solid;
+        border-top: 3px solid;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+        border-color: #ffffff;
+        z-index: 2;
+      }
+      .up:hover {
+        background-color: #374ceb;
+      }
+      .down:hover {
+        background-color: #374ceb;
+      }
+      .right:hover {
+        background-color: #374ceb;
+      }
+      .left:hover {
+        background-color: #374ceb;
+      }
+      #btnSwitchMap:hover {
+        background-color: #374ceb;
+      }
+      .uploadbutton {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 99;
+      }
+      body {
+        font-family: "Lato", sans-serif;
+      }
+      /* Add a black background color to the top navigation */
+      .topnav {
+        background-color: black;
+        overflow: hidden;
+      }
+
+      /* Style the links inside the navigation bar */
+      .topnav a {
+        float: left;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+      }
+
+      /* Change the color of links on hover */
+      .topnav a:hover {
+        background-color: #ddd;
+        color: black;
+      }
+
+      /* Add a color to the active/current link */
+      .topnav a.active {
+        background-color: black;
+        color: white;
+      }
+
+      .sidenav {
+        height: 100%;
+        width: 30px;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        right: 0;
+        background-color: #111;
+        overflow-x: hidden;
+        padding-top: 20px;
+      }
+
+      .sidenav a {
+        padding: 6px 8px 6px 16px;
+        text-decoration: none;
+        font-size: 25px;
+        color: #818181;
+        display: block;
+      }
+
+      .sidenav a:hover {
+        color: #f1f1f1;
+      }
+
+      .main {
+        margin-left: 160px; /* Same as the width of the sidenav */
+        font-size: 28px; /* Increased text to enable scrolling */
+        padding: 0px 6px;
+      }
+
+      @media screen and (max-height: 450px) {
+        .sidenav {
+          padding-top: 5px;
+        }
+        .sidenav a {
+          font-size: 18px;
+        }
+      }
+
+      .btn {
+        background-color: black; /* Blue background */
+        border: none; /* Remove borders */
+        color: white; /* White text */
+        padding: 12px 16px; /* Some padding */
+        font-size: 16px; /* Set a font size */
+        cursor: pointer; /* Mouse pointer on hover */
+      }
+
+      .GFG {
+        background-color: white;
+        border: 2px solid black;
+        color: green;
+        padding: 5px 10px;
+        text-align: center;
+        display: inline-block;
+        font-size: 20px;
+        margin: 10px 30px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="topnav">
+      <a class="active" href="#mapping">Community Mapping System</a>
+    </div>
+    <div class="sidenav">
+      <button class="btn"><i class="fa fa-code-fork"></i></button><br />
+      <button class="btn">
+        <i class="fa fa-home"></i>
+      </button>
+      <button class="btn"><i class="fa fa-camera"></i></button>
+      <button class="btn" onclick="addOrRemoveOneVectorLayer()">
+        <i class="fa fa-bars"></i>
+      </button>
+      <button class="btn" onclick="addOrRemoveOneVectorLayer2()">
+        <i class="fa fa-cloud-upload"></i>
+      </button>
+      <button class="btn" onclick="addOrRemoveOneVectorLayer3()">
+        <i class="fa fa-cloud-upload"></i>
+      </button>
+      <button class="btn" onclick="addOrRemoveOneVectorLayer4()">
+        <i class="fa fa-random" aria-hidden="true"></i>
+      </button>
+      <button class="btn"><i class="fa fa-bars"></i></button>
+      <button class="btn"><i class="fa fa-file-text"></i></button>
+      <button class="btn"><i class="fa fa-trash"></i></button>
+      <button class="btn"><i class="fa fa-building"></i></button>
+      <button class="btn"><i class="fa fa-tag"></i></button>
+      <button class="btn"><i class="fa fa-users"></i></button>
+      <button class="btn"><i class="fa fa-floppy-o"></i></button>
+      <button class="btn"><i class="fa fa-address-book"></i></button>
+    </div>
+    <div id="olCesMap">
+      <button
+        id="btnSwitchMap"
+        onclick="cesViewer.setEnabled(!cesViewer.getEnabled());switchwindow()"
+      >
+        <div id="myDIV">3D</div>
+      </button>
+      <button
+        class="right"
+        style="font-size: 12px"
+        onclick="control.rotate(0.05)"
+      >
+        <i class="fa fa-rotate-right" style="color: white"></i>
+      </button>
+      <button
+        class="left"
+        style="font-size: 12px"
+        onclick="control.rotate(-0.05)"
+      >
+        <i class="fa fa-rotate-left" style="color: white"></i>
+      </button>
+      <div id="hide">
+        <button
+          class="up"
+          style="font-size: 12px"
+          onclick="control.tiltOnGlobe(0.05)"
+        >
+          <i class="fa fa-arrow-up" style="color: white"></i>
+        </button>
+        <button
+          class="down"
+          style="font-size: 12px"
+          onclick="control.tiltOnGlobe(-0.05)"
+        >
+          <i class="fa fa-arrow-down" style="color: white"></i>
+        </button>
+      </div>
+    </div>
+    <script defer>
+      var c = 0;
+      if (c == 0) {
+        document.getElementById("hide").style.display = "none";
+      }
+      function switchwindow() {
+        c = 1;
+        var x = document.getElementById("myDIV");
+        var y = document.getElementById("hide");
+        if (x.innerHTML == "2D") {
+          x.innerHTML = "3D";
+          y.style.display = "none";
+        } else {
+          x.innerHTML = "2D";
+          y.style.display = "block";
+        }
+      }
+      var controls = ol.control.defaults({
+        rotate: true,
+        rotateOptions: {
+          tipLabel: "Reset rotation. \nUse Alt+Shift+Drag to rotate the map.",
+        },
+      });
+      var interactions = ol.interaction.defaults({
+        altShiftDragRotate: true,
+        pinchRotate: true,
+      });
+
+      // Declaring Zoom level to further view
+      var zoom = 3;
+      // Declaring Map center
+      var center = ol.proj.fromLonLat([-96.41778916767144, 39.90201978025539]);
+
+      const basemapTileLayer = new ol.layer.Tile({
+        title: "BaseMaps",
+        displayInLayerSwitcher: false,
+        source: new ol.source.BingMaps({
+          key: "AvrksfN--Rpz18iPttSo-29GMAjDLDgaYV38jU4pGXO06L-JktpS25efkqzWcMm_ ",
+          imagerySet: "AerialWithLabels",
+        }),
+      });
+
+      let hasTheVectorLayer = true;
+      window["addOrRemoveOneVectorLayer"] = function () {
+        if (hasTheVectorLayer) {
+          map.getLayers().remove(vectorLayer);
+        } else {
+          map.getLayers().insertAt(1, vectorLayer);
+        }
+        hasTheVectorLayer = !hasTheVectorLayer;
+      };
+
+      let hasTheVectorLayer2 = true;
+      window["addOrRemoveOneVectorLayer2"] = function () {
+        if (hasTheVectorLayer2) {
+          map.getLayers().remove(vectorLayer2);
+        } else {
+          map.getLayers().insertAt(1, vectorLayer2);
+        }
+        hasTheVectorLayer2 = !hasTheVectorLayer2;
+      };
+
+      let hasTheVectorLayer3 = true;
+      window["addOrRemoveOneVectorLayer3"] = function () {
+        if (hasTheVectorLayer3) {
+          map.getLayers().remove(vectorLayer3);
+        } else {
+          map.getLayers().insertAt(1, vectorLayer3);
+        }
+        hasTheVectorLayer3 = !hasTheVectorLayer3;
+      };
+      let hasTheVectorLayer4 = true;
+      window["addOrRemoveOneVectorLayer4"] = function () {
+        if (hasTheVectorLayer4) {
+          map.getLayers().remove(vectorLayer4);
+        } else {
+          map.getLayers().insertAt(1, vectorLayer4);
+        }
+        hasTheVectorLayer4 = !hasTheVectorLayer4;
+      };
+
+      var vectorSource = new ol.source.Vector({
+        format: new ol.format.GeoJSON(),
+        url: "./data/geojson/kf_parcels_4326.geojson",
+      });
+      var vectorLayer = new ol.layer.Vector({
+        source: vectorSource,
+        style: new ol.style.Style({
+          fill: new ol.style.Fill({
+            color: "rgba(255,0,0,1.0)",
+          }),
+        }),
+      });
+
+      var vectorSource2 = new ol.source.Vector({
+        format: new ol.format.GeoJSON(),
+        url: "./data/geojson/sf_buildings.geojson",
+      });
+      var vectorLayer2 = new ol.layer.Vector({
+        source: vectorSource2,
+        style: new ol.style.Style({
+          fill: new ol.style.Fill({
+            color: "white",
+          }),
+        }),
+      });
+
+      var vectorSource3 = new ol.source.Vector({
+        format: new ol.format.GeoJSON(),
+        url: "./data/geojson/sf_flood.geojson",
+      });
+      var vectorLayer3 = new ol.layer.Vector({
+        source: vectorSource3,
+        style: new ol.style.Style({
+          fill: new ol.style.Fill({
+            color: "blue",
+          }),
+        }),
+      });
+
+      var vectorSource4 = new ol.source.Vector({
+        format: new ol.format.GeoJSON(),
+        url: "./data/geojson/sf_barsk.geojson",
+      });
+      var vectorLayer4 = new ol.layer.Vector({
+        source: vectorSource4,
+        style: new ol.style.Style({
+          fill: new ol.style.Fill({
+            color: "red",
+          }),
+        }),
+      });
+      vectorLayer4.setZIndex(1);
+      //Map Creation
+      //Create map, giving it a rotate to north control.
+      var map = new ol.Map({
+        controls: controls,
+        interactions: interactions,
+        target: "olCesMap",
+        layers: [basemapTileLayer, vectorLayer, vectorLayer2, vectorLayer3],
+        view: new ol.View({
+          center: center,
+          zoom: zoom,
+        }),
+      });
+      vectorLayer.set("altitudeMode", "clampToGround");
+
+      //Cesium Viewer constructed based on Ol.Map
+      var cesViewer = new olcs.OLCesium({
+        map: map,
+        sceneOptions: {
+          mapProjection: new Cesium.WebMercatorProjection(),
+        },
+      });
+
+      //Cesium Viewer camera set-up
+      //cesViewer.getCamera().setTilt(1.214017522847965);
+      //cesViewer.getCamera().setAltitude(3000);
+
+      //Cesium Viewer scene
+      var scene = cesViewer.getCesiumScene();
+
+      //Cesium Viewer enable
+      cesViewer.setEnabled(false);
+
+      //Cesium Viewer depthtest
+      scene.globe.depthTestAgainstTerrain = true;
+    </script>
+  </body>
+</html>
